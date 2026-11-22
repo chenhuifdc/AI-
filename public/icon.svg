@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1D4ED8" />
+      <stop offset="100%" stop-color="#1E3A8A" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)" />
+  <!-- Modular isometric container cube & bridge node motif -->
+  <g fill="none" stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" stroke-linejoin="round">
+    <polygon points="256,104 388,180 388,332 256,408 124,332 124,180" fill="#FFFFFF" fill-opacity="0.1" />
+    <polyline points="124,180 256,256 388,180" />
+    <line x1="256" y1="256" x2="256" y2="408" />
+  </g>
+  <!-- Highlighted connection nodes -->
+  <circle cx="256" cy="104" r="22" fill="#34D399" stroke="#FFFFFF" stroke-width="8" />
+  <circle cx="388" cy="180" r="18" fill="#FFFFFF" />
+  <circle cx="124" cy="180" r="18" fill="#FFFFFF" />
+  <circle cx="256" cy="256" r="22" fill="#FFFFFF" />
+</svg>

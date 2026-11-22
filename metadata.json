@@ -1,0 +1,6 @@
+{
+  "name": "开源复用实验室",
+  "description": "面向零代码 AI 实践者的可视化学习工作台：打通 OpenRouter、Ollama、Docker、Dify 与智能体工具链，通过生活案例系统掌握 GitHub 与 Hugging Face 开源工具直接复用。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
