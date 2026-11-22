@@ -904,6 +904,42 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
       },
     ],
   },
+  {
+    id: 'stage-5',
+    stageNumber: '阶段 05',
+    title: '全栈上线与自动化生态：Vercel、Render、Cloudflare 与后台数据',
+    goal: '搞懂前端、后端与后台数据网站如何联动，并掌握用 Vercel / Render / Cloudflare 把作品发布到公网让手机随时访问。',
+    milestones: [
+      {
+        id: 'm5-1',
+        title: '动手跑通「后台数据网站 → 实时改前端」沙盘实验',
+        practiceTask: '在「工具图鉴」的前后端沙盘中修改店名、商品价格与上下架状态，观察后端 JSON 如何免改代码直接更新前端画面。',
+        estimatedTime: '8 分钟',
+        linkedSection: 'ecosystem',
+      },
+      {
+        id: 'm5-2',
+        title: '用 Vercel 上线 1 个纯前端网页（GitHub 推送即发布）',
+        practiceTask: '在「工具图鉴」看完 Vercel 4 步流程图后，将任意静态/React 仓库导入 Vercel，体验 30 秒拿到公网 HTTPS 网址。',
+        estimatedTime: '15 分钟',
+        linkedSection: 'ecosystem',
+      },
+      {
+        id: 'm5-3',
+        title: '用 Render 部署 1 个带后端接口的全栈项目（如本项目）',
+        practiceTask: '关联 GitHub 仓库到 Render Web Service，配置 Build/Start 命令与 GEMINI_API_KEY 环境变量，实现脱离局域网用手机 5G 随时访问。',
+        estimatedTime: '20 分钟',
+        linkedSection: 'ecosystem',
+      },
+      {
+        id: 'm5-4',
+        title: '对照 9 大工具图谱选出 1 款自动化/边缘工具实战',
+        practiceTask: '结合场景对比表，在 Cloudflare、n8n、Activepieces、Windmill、Node-RED、Coze、腾讯元器中挑一款最贴合当前需求的完成首条流程。',
+        estimatedTime: '25 分钟',
+        linkedSection: 'ecosystem',
+      },
+    ],
+  },
 ];
 
 export const INITIAL_TOOL_NOTES: ToolNote[] = [

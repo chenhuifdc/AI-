@@ -1,4 +1,4 @@
-export type NavSection = 'bridge' | 'xray' | 'cases' | 'toolbox' | 'security';
+export type NavSection = 'bridge' | 'ecosystem' | 'xray' | 'cases' | 'toolbox' | 'security';
 
 export type NodeLayer = 'mastered' | 'opensource';
 
@@ -524,5 +524,215 @@ export interface ChallengeEvaluationResult {
   traceSteps: ChallengeTraceStep[];
   summary: string;
 }
+
+export type EcosystemToolCategory =
+  | 'all'
+  | 'edge-infra'
+  | 'workflow'
+  | 'ai-agent-platform'
+  | 'iot-script';
+
+export interface ToolFlowStep {
+  stepNumber: number;
+  nodeName: string;
+  role: string;
+  action: string;
+  sampleData: string;
+  accent: 'blue' | 'emerald' | 'amber' | 'indigo';
+}
+
+export interface EcosystemToolScenario {
+  id: string;
+  name: string;
+  cnTitle: string;
+  category: Exclude<EcosystemToolCategory, 'all'>;
+  categoryLabel: string;
+  oneLineAnalogy: string;
+  plainExplain: string;
+  deploymentMode: string;
+  zeroCodeLevel: string;
+  bestFor: string;
+  caseTitle: string;
+  painBefore: string;
+  outcomeAfter: string;
+  steps: ToolFlowStep[];
+  pairingTip: string;
+  quickCommandLabel?: string;
+  quickCommand?: string;
+}
+
+export interface EcosystemCompareRow {
+  toolName: string;
+  coreRole: string;
+  typicalScenario: string;
+  zeroCodeThreshold: string;
+  whenToPick: string;
+}
+
+export type ArchitectureLayerId = 'frontend' | 'backend' | 'admin-cms';
+
+export interface ArchitectureLayerInfo {
+  id: ArchitectureLayerId;
+  title: string;
+  enName: string;
+  lifeAnalogy: string;
+  plainSummary: string;
+  whoUsesIt: string;
+  typicalTools: string;
+  needsRedeploy: string;
+  concreteExample: string;
+}
+
+export interface AdminProductItem {
+  id: string;
+  name: string;
+  price: number;
+  tag: string;
+  inStock: boolean;
+}
+
+export interface AdminSandboxData {
+  presetId: string;
+  siteTitle: string;
+  announcement: string;
+  promoEnabled: boolean;
+  accentTheme: 'blue' | 'emerald' | 'amber';
+  items: AdminProductItem[];
+}
+
+export interface AdminSyncTrace {
+  syncId: number;
+  timestamp: string;
+  endpoint: string;
+  changedFields: string[];
+  requestSummary: string;
+  frontendEffect: string;
+  payloadJson: string;
+}
+
+export interface ToolExplainerSource {
+  title: string;
+  url: string;
+}
+
+export interface ToolExplainerFlowStep {
+  stepNumber: number;
+  nodeName: string;
+  role: string;
+  action: string;
+  sampleData: string;
+}
+
+export interface ToolExplainerResult {
+  query: string;
+  toolName: string;
+  chineseSubtitle: string;
+  categoryLayer: string;
+  difficulty: string;
+  oneLineAnalogy: string;
+  plainDefinition: string;
+  bestFor: string;
+  scenarioTitle: string;
+  painBefore: string;
+  outcomeAfter: string;
+  steps: ToolExplainerFlowStep[];
+  relatedTools: string[];
+  sources: ToolExplainerSource[];
+  grounded: boolean;
+}
+
+export interface PrincipleDiagramNode {
+  stepNumber: number;
+  stageLabel: string;
+  title: string;
+  techDetail: string;
+  accent: 'blue' | 'indigo' | 'amber' | 'emerald';
+}
+
+export interface ScenarioToolPrinciple {
+  id: string;
+  toolName: string;
+  cnName: string;
+  ecosystemToolId?: string;
+  licenseLabel: string;
+  deployHint: string;
+  scenarioCategory: string;
+  scenarioTitle: string;
+  keywords: string[];
+  oneLineReason: string;
+  principleSummary: string;
+  diagramNodes: [
+    PrincipleDiagramNode,
+    PrincipleDiagramNode,
+    PrincipleDiagramNode,
+    PrincipleDiagramNode
+  ];
+  dataFlowLabels: [string, string, string];
+  quickStartHint: string;
+  quickCommand?: string;
+}
+
+export interface ScenarioMatchItem {
+  entry: ScenarioToolPrinciple;
+  score: number;
+  matchedTerms: string[];
+}
+
+export interface ScenarioMatchResponse {
+  normalizedQuery: string;
+  isDefaultView: boolean;
+  matches: ScenarioMatchItem[];
+}
+
+export type CloudPlatformId = 'vercel' | 'render' | 'cloudflare-pages' | 'github-pages';
+
+export type CloudProjectProfileId =
+  | 'static-portfolio'
+  | 'modern-frontend'
+  | 'fullstack-backend'
+  | 'high-traffic-public';
+
+export type CloudDimensionFocus = 'all' | 'deploy' | 'quota' | 'scenarios';
+
+export interface CloudProjectProfile {
+  id: CloudProjectProfileId;
+  label: string;
+  shortDesc: string;
+  exampleProject: string;
+  keyRequirement: string;
+}
+
+export interface CloudPlatformCapabilityBar {
+  label: string;
+  levelLabel: string;
+  percent: number;
+}
+
+export interface CloudPlatformSpec {
+  id: CloudPlatformId;
+  name: string;
+  cnRole: string;
+  tagline: string;
+  deployMethods: string[];
+  deployPipelineSteps: [string, string, string];
+  freeQuotaHeadline: string;
+  bandwidthQuota: string;
+  computeQuota: string;
+  backendSupport: string;
+  sleepBehavior: string;
+  customDomainHttps: string;
+  bestScenarios: string[];
+  avoidWhen: string;
+  capabilityBars: CloudPlatformCapabilityBar[];
+  quickTip: string;
+}
+
+export interface CloudPlatformRecommendation {
+  spec: CloudPlatformSpec;
+  tier: 'primary' | 'secondary' | 'limited';
+  tierLabel: string;
+  fitReason: string;
+}
+
 
 

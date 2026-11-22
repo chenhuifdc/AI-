@@ -690,6 +690,86 @@ export const GLOSSARY_ENTRIES: GlossaryEntry[] = [
     plainExplain: '使用已经训练好的 AI 模型根据你的输入实时生成回答、摘要或判断结果的过程。',
     category: 'AI 与开源底座',
   },
+  {
+    term: 'Cloudflare',
+    shortCn: '全球边缘加速与安全网关',
+    plainExplain: '帮网站挡住恶意攻击、在全球就近缓存加速，还能免买服务器托管页面或把本机工具安全暴露给手机访问的云端网络管家。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'n8n',
+    aliases: ['N8N'],
+    shortCn: '开源可视化自动化流水线',
+    plainExplain: '像画流程图一样把微信、邮箱、表格、大模型和网页接口连起来的开源自动化神器，支持 Docker 本地私有部署。',
+    category: 'AI 与开源底座',
+  },
+  {
+    term: 'Activepieces',
+    shortCn: '零代码开源自动化平台',
+    plainExplain: '界面极简、类似 Zapier 的开源自动化工具，把表单、邮件、飞书和 AI 总结按“触发器 → 动作”拼装成自动任务。',
+    category: 'AI 与开源底座',
+  },
+  {
+    term: 'Windmill',
+    shortCn: '脚本一键变网页后台平台',
+    plainExplain: '把开发者或 AI 写好的 Python/TypeScript 脚本自动变成带表单按钮、定时任务和审批流的企业内部工具平台。',
+    category: 'AI 与开源底座',
+  },
+  {
+    term: 'Node-RED',
+    shortCn: '物联网与硬件可视化连线工具',
+    plainExplain: '通过拖拽节点连线把智能家居传感器、树莓派、API 与手机通知串起来的事件驱动编排画布。',
+    category: 'AI 与开源底座',
+  },
+  {
+    term: 'Coze',
+    shortCn: '扣子零代码智能体平台',
+    plainExplain: '通过拖拽提示词、知识库、插件与工作流快速搭建 AI 机器人，并一键发布到微信、飞书、网页的零代码平台。',
+    category: 'AI 与开源底座',
+  },
+  {
+    term: 'Frontend',
+    shortCn: '前端展示界面',
+    plainExplain: '用户打开浏览器或手机 App 后亲眼看到、可以直接点击交互的所有按钮、卡片、表单与页面动画。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'Backend',
+    shortCn: '后端业务与数据服务',
+    plainExplain: '运行在服务器上的“后厨大脑”，负责校验用户身份、读写数据库、调用大模型 API 并把结果安全传给前端。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'Headless CMS',
+    aliases: ['CMS'],
+    shortCn: '后台内容/数据管理网站',
+    plainExplain: '专门给运营者或老板使用的可视化数据后台（如 Directus、Strapi、飞书多维表格），改完数据后前端网页自动更新，无需重新写代码。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'CDN',
+    shortCn: '全球内容分发加速网络',
+    plainExplain: '把网站的静态页面与图片提前复制到离用户最近的各地机房，让外地或手机端打开网页速度大幅提升。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'CRUD',
+    shortCn: '数据增删改查操作',
+    plainExplain: 'Create、Read、Update、Delete 的缩写，指后台数据网站对商品、文章或用户记录进行的新增、读取、修改和删除四种基本动作。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'Vercel',
+    shortCn: '前端推送即上线云平台',
+    plainExplain: '绑定 GitHub 仓库后 30 秒自动编译并发布 React / Next.js 前端网页、自带全球加速与免费 HTTPS 域名的无服务器托管平台。',
+    category: '协议与开发接口',
+  },
+  {
+    term: 'Render',
+    shortCn: '全栈后端与容器云托管平台',
+    plainExplain: '支持直接从 GitHub 部署 Node.js、Python 后端接口、Docker 容器与数据库的云平台，适合让带后端的 AI 网站获得永久公网网址。',
+    category: '协议与开发接口',
+  },
 ];
 
 /**

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import fs from 'node:fs';
+import http from 'node:http';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GoogleGenAI, ThinkingLevel, Type } from '@google/genai';
@@ -19,12 +20,17 @@ import {
   validateSimilarToolsRequest,
   type RawGeminiSimilarCandidate,
 } from './src/utils/similarTools.ts';
+import {
+  normalizeToolExplainerPayload,
+  validateToolSearchQuery,
+} from './src/utils/toolExplainer.ts';
 import type {
   GithubRepoSuggestion,
   GithubSearchResponse,
   ReuseMethod,
   SimilarToolRecommendation,
   SimilarToolsResponse,
+  ToolExplainerResult,
 } from './src/types/learning.ts';
 
 function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
@@ -105,6 +111,14 @@ interface SimilarCacheEntry {
 const similarToolsCache = new Map<string, SimilarCacheEntry>();
 const inFlightSimilarRequests = new Map<string, Promise<SimilarToolsResponse>>();
 const SIMILAR_CACHE_TTL_MS = 10 * 60 * 1000;
+
+interface ToolExplainerCacheEntry {
+  expiresAt: number;
+  data: ToolExplainerResult;
+}
+
+const toolExplainerCache = new Map<string, ToolExplainerCacheEntry>();
+const TOOL_EXPLAINER_CACHE_TTL_MS = 15 * 60 * 1000;
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -743,10 +757,172 @@ async function startServer() {
     }
   });
 
+  app.post('/api/tool-explainer', async (req, res) => {
+    const rawQuery = typeof req.body?.query === 'string' ? req.body.query : '';
+    const validation = validateToolSearchQuery(rawQuery);
+    if (!validation.valid) {
+      res.status(400).json({ error: validation.error });
+      return;
+    }
+
+    const cacheKey = validation.query.toLowerCase();
+    const cached = toolExplainerCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      res.json(cached.data);
+      return;
+    }
+
+    const ai = getGeminiClient();
+    if (!ai) {
+      res.status(503).json({
+        error: '联网解析服务尚未配置 Gemini API 密钥，请检查服务端配置后再试。',
+      });
+      return;
+    }
+
+    const prompt = `你是一位擅长把复杂技术工具讲成“零代码生活化图解案例”的资深产品架构师。
+请先使用 Google Search 联网核实工具或技术概念「${validation.query}」的最新官方定位、真实功能与典型应用场景，然后严格只输出一个 JSON 对象（不要包含 Markdown 代码块之外的任何多余解释文字），格式如下：
+{
+  "toolName": "工具标准名称（如 n8n / Cloudflare / Supabase）",
+  "chineseSubtitle": "15字以内的精准中文定位",
+  "categoryLayer": "所属层级（如：边缘网络与部署 / 自动化工作流 / 后端与数据库 / 后台数据网站 / AI 智能体平台 / 前端框架）",
+  "difficulty": "零代码上手门槛（如：纯零代码点选 / 低代码可视化 / 需配合AI生成少量脚本）",
+  "oneLineAnalogy": "一句生动的生活化类比，让完全不懂代码的人5秒懂它是干嘛的",
+  "plainDefinition": "80-130字大白话介绍，说明它解决什么痛点、为什么值得用",
+  "bestFor": "一句话总结最适合的使用人群与场景",
+  "scenarioTitle": "一个具体、真实、贴近生活或办公的实战案例标题（以「案例：」开头）",
+  "painBefore": "没用这个工具之前有多麻烦（40-70字）",
+  "outcomeAfter": "用上之后达到的直观效果（40-70字）",
+  "steps": [
+    {
+      "nodeName": "步骤1节点短名称（6-12字）",
+      "role": "角色标签（4-8字，如：触发源/用户输入）",
+      "action": "这一步具体发生什么（30-55字）",
+      "sampleData": "这一步流转的具体数据例子（15-35字）"
+    }
+  ],
+  "relatedTools": ["可搭配或对比的工具1", "工具2", "工具3"]
+}
+要求：
+1. steps 数组必须严格包含 3 或 4 个按先后顺序串联的真实流程步骤，能够画成直观的可视化流程图。
+2. 全部内容使用清晰自然、避免晦涩术语的简体中文。`;
+
+    try {
+      let lastError: unknown;
+      let responseText = '';
+      let rawSources: Array<{ title?: string; url?: string }> = [];
+
+      const modelsToTry = ['gemini-4-hydrogen', 'gemini-3.1-flash-lite'] as const;
+      for (let attempt = 0; attempt < modelsToTry.length; attempt += 1) {
+        const modelName = modelsToTry[attempt];
+        try {
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: prompt,
+            config: {
+              tools: [{ googleSearch: {} }],
+              ...(modelName === 'gemini-4-hydrogen'
+                ? { thinkingConfig: { thinkingLevel: ThinkingLevel.LOW } }
+                : {}),
+            },
+          });
+
+          responseText = (response.text ?? '').trim();
+          const chunks =
+            response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
+          rawSources = chunks
+            .map((chunk) => ({
+              title: chunk.web?.title,
+              url: chunk.web?.uri,
+            }))
+            .filter((item) => Boolean(item.url));
+          break;
+        } catch (err) {
+          lastError = err;
+          const errMsg = err instanceof Error ? err.message : String(err);
+          const isRateLimited =
+            errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('429');
+          if (attempt === 0 && (isRetryableGeminiError(err) || isRateLimited)) {
+            await sleep(isRateLimited ? 1500 : 700);
+            continue;
+          }
+          throw err;
+        }
+      }
+
+      if (!responseText && lastError) {
+        throw lastError;
+      }
+
+      const normalized = normalizeToolExplainerPayload(
+        responseText,
+        validation.query,
+        rawSources
+      );
+
+      if (!normalized) {
+        res.status(502).json({
+          error: '联网解析返回格式异常，请稍候重试或换一个更具体的工具名称。',
+        });
+        return;
+      }
+
+      if (toolExplainerCache.size >= 40) {
+        const oldestKey = toolExplainerCache.keys().next().value;
+        if (oldestKey) toolExplainerCache.delete(oldestKey);
+      }
+      toolExplainerCache.set(cacheKey, {
+        expiresAt: Date.now() + TOOL_EXPLAINER_CACHE_TTL_MS,
+        data: normalized,
+      });
+
+      res.json(normalized);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[tool-explainer] Gemini grounded search error:', msg);
+
+      const isAuthErr =
+        msg.includes('API_KEY_INVALID') ||
+        msg.includes('PERMISSION_DENIED') ||
+        msg.includes('403') ||
+        msg.includes('401');
+      const isQuotaErr = msg.includes('RESOURCE_EXHAUSTED') || msg.includes('429');
+      const isTimeoutErr = isRetryableGeminiError(err);
+
+      if (isAuthErr) {
+        res.status(502).json({
+          error: 'Gemini 联网检索认证失败，请在 Settings > Secrets 面板检查 API 密钥状态。',
+        });
+        return;
+      }
+      if (isQuotaErr) {
+        res.status(429).json({
+          error: '联网检索当前请求达到配额上限，请稍后再试。',
+        });
+        return;
+      }
+      if (isTimeoutErr) {
+        res.status(504).json({
+          error: '联网搜索响应超时，请点击「重新搜索」再试一次。',
+        });
+        return;
+      }
+      res.status(502).json({
+        error: '联网解析工具含义暂时失败，请稍候重试。',
+      });
+    }
+  });
+
+  const httpServer = http.createServer(app);
+
   if (!IS_PROD) {
     const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: {
+        middlewareMode: true,
+        allowedHosts: true,
+        ws: { server: httpServer },
+      },
       appType: 'spa',
     });
     app.use(vite.middlewares);
@@ -763,7 +939,7 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
+  httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`Server running on http://0.0.0.0:${PORT}`);
   });
 }

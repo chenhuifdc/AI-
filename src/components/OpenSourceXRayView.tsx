@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { CheckCircle2, EyeOff, SlidersHorizontal, Sparkles } from 'lucide-react';
+import { CheckCircle2, Cloud, EyeOff, SlidersHorizontal, Sparkles } from 'lucide-react';
 import { GITHUB_XRAY_HOTSPOTS, HF_XRAY_HOTSPOTS } from '../data/learningData';
 import type { QuantizationLevel, XRayHotspot, XRayImportance, XRayPlatform } from '../types/learning';
 import { calculateModelFit } from '../utils/learningEngine';
+import { CloudInfraComparePanel } from './CloudInfraComparePanel';
 import { CopyButton } from './CopyButton';
 import { GlossaryText } from './GlossaryText';
 
@@ -85,36 +86,49 @@ export function OpenSourceXRayView() {
           </p>
         </div>
 
-        <div
-          role="tablist"
-          aria-label="选择要解剖的开源平台"
-          className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg self-start lg:self-auto shrink-0"
-        >
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 self-start lg:self-auto shrink-0">
+          <div
+            role="tablist"
+            aria-label="选择要解剖的开源平台"
+            className="flex items-center gap-1 p-1 bg-slate-200/70 rounded-lg"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={platform === 'github'}
+              onClick={() => handlePlatformChange('github')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                platform === 'github'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              GitHub 开源项目页解剖
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={platform === 'huggingface'}
+              onClick={() => handlePlatformChange('huggingface')}
+              className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
+                platform === 'huggingface'
+                  ? 'bg-white text-slate-900 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              Hugging Face 模型与 Space 解剖
+            </button>
+          </div>
           <button
             type="button"
-            role="tab"
-            aria-selected={platform === 'github'}
-            onClick={() => handlePlatformChange('github')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              platform === 'github'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
+            onClick={() => {
+              const el = document.getElementById('cloud-infra-compare');
+              if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }}
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium text-blue-700 bg-white border border-blue-200 hover:border-blue-400 hover:bg-blue-50/50 rounded-lg transition-colors whitespace-nowrap shrink-0 cursor-pointer"
           >
-            GitHub 开源项目页解剖
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={platform === 'huggingface'}
-            onClick={() => handlePlatformChange('huggingface')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap shrink-0 cursor-pointer ${
-              platform === 'huggingface'
-                ? 'bg-white text-slate-900 shadow-xs'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Hugging Face 模型与 Space 解剖
+            <Cloud className="w-3.5 h-3.5" aria-hidden="true" />
+            <span>直达云基础设施对比</span>
           </button>
         </div>
       </section>
@@ -725,6 +739,9 @@ export function OpenSourceXRayView() {
           })}
         </div>
       </section>
+
+      {/* Cloud Infrastructure Comparison Visual Panel */}
+      <CloudInfraComparePanel />
     </div>
   );
 }

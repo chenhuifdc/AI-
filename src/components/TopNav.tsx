@@ -10,6 +10,7 @@ interface TopNavProps {
 
 const NAV_ITEMS: Array<{ id: NavSection; label: string }> = [
   { id: 'bridge', label: '能力图谱' },
+  { id: 'ecosystem', label: '工具图鉴' },
   { id: 'xray', label: '开源解剖台' },
   { id: 'cases', label: '生活实战室' },
   { id: 'toolbox', label: '实战清单' },
@@ -29,10 +30,10 @@ export function TopNav({ activeSection, onSelectSection, onOpenWizard }: TopNavP
           开源复用实验室
         </button>
 
-        {/* Zone 2: 5 Single-line Navigation Links */}
+        {/* Zone 2: Single-line Navigation Links */}
         <nav
           aria-label="主导航"
-          className="hidden md:flex items-center gap-6 lg:gap-7 text-sm font-medium"
+          className="hidden md:flex items-center gap-4 lg:gap-6 text-sm font-medium"
         >
           {NAV_ITEMS.map((item) => {
             const isActive = activeSection === item.id;

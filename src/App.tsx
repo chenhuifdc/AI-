@@ -6,6 +6,7 @@ import { LifeCaseLabView } from './components/LifeCaseLabView';
 import { MasteryToolboxView } from './components/MasteryToolboxView';
 import { OpenSourceXRayView } from './components/OpenSourceXRayView';
 import { SecurityDefenseView } from './components/SecurityDefenseView';
+import { ToolEcosystemView } from './components/ToolEcosystemView';
 import { ToolchainBridgeView } from './components/ToolchainBridgeView';
 import { TopNav } from './components/TopNav';
 import { OfflineIndicator } from './components/OfflineIndicator';
@@ -246,6 +247,8 @@ export default function App() {
             />
           )}
 
+          {activeSection === 'ecosystem' && <ToolEcosystemView />}
+
           {activeSection === 'xray' && <OpenSourceXRayView />}
 
           {activeSection === 'cases' && (
@@ -320,6 +323,13 @@ export default function App() {
               className="hover:text-slate-900 transition-colors cursor-pointer"
             >
               能力图谱
+            </button>
+            <button
+              type="button"
+              onClick={() => handleNavigateToSection('ecosystem')}
+              className="hover:text-slate-900 transition-colors cursor-pointer"
+            >
+              工具图鉴
             </button>
             <button
               type="button"
