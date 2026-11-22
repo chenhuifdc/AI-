@@ -51,7 +51,11 @@ function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const PORT = Number(process.env.PORT) || 3000;
-const IS_PROD = process.env.NODE_ENV === 'production';
+const IS_PROD =
+  process.env.NODE_ENV === 'production' ||
+  Boolean(process.env.RENDER) ||
+  Boolean(process.env.RAILWAY_ENVIRONMENT) ||
+  Boolean(process.env.FLY_APP_NAME);
 
 const VALID_METHODS: ReuseMethod[] = [
   'Docker 部署',

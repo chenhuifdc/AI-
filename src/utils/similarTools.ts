@@ -4,7 +4,7 @@ import type {
   ToolNote,
   ToolPlatform,
 } from '../types/learning';
-import { buildAgentPromptForRepo, isSafeGithubUrl } from './githubSearch';
+import { buildAgentPromptForRepo, isSafeGithubUrl } from './githubSearch.ts';
 
 const VALID_METHODS: ReuseMethod[] = [
   'Docker 部署',
